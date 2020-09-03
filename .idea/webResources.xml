@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="WebResourcesPaths">
+    <contentEntries>
+      <entry url="file://$PROJECT_DIR$">
+        <entryData>
+          <resourceRoots>
+            <path value="file://$PROJECT_DIR$/dietas" />
+            <path value="file://$PROJECT_DIR$/core" />
+            <path value="file://$PROJECT_DIR$/usuarios" />
+            <path value="file://$PROJECT_DIR$/nutrientes" />
+            <path value="file://$PROJECT_DIR$/recomendado" />
+          </resourceRoots>
+        </entryData>
+      </entry>
+    </contentEntries>
+  </component>
+</project>

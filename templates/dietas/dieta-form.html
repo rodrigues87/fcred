@@ -1,0 +1,161 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block content %}
+
+    <div class="row">
+    <div class="col-sm-7">
+    <div class="card shadow mb-4">
+        <div class="card-header py-3">
+            <h6 class="m-0 font-weight-bold text-primary">Alimentos</h6>
+        </div>
+        <div class="card-body">
+            <div class="table-responsive">
+                <table class="table table-bordered" id="alimentos" width="100%" cellspacing="0">
+                    <thead>
+                    <tr>
+                        <th>Nome</th>
+                        <th>Quantidade(g)</th>
+                        <th>Ações</th>
+                    </tr>
+                    </thead>
+                    <tfoot>
+                    <tr>
+                        <th>Nome</th>
+                        <th>Quantidade(g)</th>
+                        <th>Ações</th>
+
+                    </tr>
+                    </tfoot>
+                    <tbody>
+
+                    {% for alimento in alimentos %}
+                        <tr>
+                            <td>
+                                <a href="{% url 'update_alimento' alimento.id %}">
+                                    {{ alimento.nome }}
+                                </a>
+
+                            </td>
+                            <td>
+                                <input type="number" min="1" max="10000" size="5" style="width: 6em;" value="100">
+                            </td>
+                            <td class="text-center">
+                                <input type="checkbox" id="checkbox1" name="checkbox1"
+                                       onclick="checkAlert({{ alimento.id }},{{ dieta.id }})">
+                            </td>
+
+                        </tr>
+
+                    {% endfor %}
+
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+    </div>
+        <div class="col-sm-5">
+                <div class="card shadow mb-4">
+        <div class="card-header py-3">
+            <h6 class="m-0 font-weight-bold text-primary">Alimentos</h6>
+        </div>
+        <div class="card-body">
+            <div class="table-responsive">
+                <table class="table table-bordered" id="tabela_alimentar" width="100%" cellspacing="0">
+                    <thead>
+                    <tr>
+                        <th>Nome</th>
+                        <th>Quantidade Recomendada(g)</th>
+                        <th>Quantidade Selecionada(g)</th>
+                    </tr>
+                    </thead>
+                    <tfoot>
+                    <tr>
+                        <th>Nome</th>
+                        <th>Quantidade Recomendada(g)</th>
+                        <th>Quantidade Selecionada(g)</th>
+                    </tr>
+                    </tfoot>
+                    <tbody>
+                    <tr>
+                        <td>
+                            Carboidratos
+                        </td>
+                        <td class="text-center">
+                            0
+                        </td>
+                        <td class="text-center">
+                            0
+                        </td>
+                    </tr>
+
+
+                    </tbody>
+                </table>
+            </div>
+        </div>
+                </div>
+
+        </div>
+
+    </div>
+
+    <script>
+        function checkAlert(id_alimento, id_dieta) {
+            const csrftoken = getCookie('csrftoken');
+            if (document.getElementById('checkbox1').checked === true) {
+                $.ajax({
+                    type: "POST",
+                    url: "/dietas/add_alimento_dieta/" + id_alimento + "/" + id_dieta,
+                    data: {
+                        csrfmiddlewaretoken: csrftoken,
+                    },
+                    success: function () {
+                        $('#message').html("<h2>Contact Form Submitted!</h2>")
+                    }
+                });
+            } else {
+                alert("uncheked" + id_alimento)
+            }
+
+        }
+
+        function getCookie(name) {
+            let cookieValue = null;
+            if (document.cookie && document.cookie !== '') {
+                const cookies = document.cookie.split(';');
+                for (let i = 0; i < cookies.length; i++) {
+                    const cookie = cookies[i].trim();
+                    // Does this cookie string begin with the name we want?
+                    if (cookie.substring(0, name.length + 1) === (name + '=')) {
+                        cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
+                        break;
+                    }
+                }
+            }
+            return cookieValue;
+        }
+    </script>
+    <script src="{% static "vendor/jquery/jquery.min.js" %}"></script>
+
+    <script src="{% static "vendor/datatables/jquery.dataTables.min.js" %}"></script>
+    <script src="{% static "vendor/datatables/dataTables.bootstrap4.min.js" %}"></script>
+
+    <!-- Page level custom scripts -->
+    <script src="{% static "js/demo/datatables-demo.js" %}"></script>
+
+    <script>
+
+        $(document).ready(function () {
+            $('#alimentos').dataTable({
+
+            });
+            $('#tabela_alimentar').dataTable({
+
+            });
+        });
+
+    </script>
+{% endblock %}
+

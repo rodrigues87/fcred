@@ -1,0 +1,68 @@
+{% extends "base.html" %}
+
+{% load static %}
+
+{% block content %}
+
+    <link href="{% static "vendor/datatables/dataTables.bootstrap4.min.css" %}" rel="stylesheet">
+
+    <h1 class="h3 mb-2 text-gray-800">Dietas</h1>
+    <p class="mb-4">Lista contendo {{ dietas.all.count }} dietas</a>.</p>
+
+    <!-- DataTales Example -->
+    <div class="card shadow mb-4">
+        <div class="card-header py-3">
+            <h6 class="m-0 font-weight-bold text-primary">DataTables Example</h6>
+        </div>
+        <div class="card-body">
+            <div class="table-responsive">
+                <table class="table table-bordered" id="dataTable" width="100%" cellspacing="0">
+                    <thead>
+                    <tr>
+                        <th>Nome</th>
+                        <th>Ações</th>
+                    </tr>
+                    </thead>
+                    <tfoot>
+                    <tr>
+                        <th>Nome</th>
+                        <th>Ações</th>
+
+                    </tr>
+                    </tfoot>
+                    <tbody>
+                    {% for dieta in dietas %}
+                        <tr>
+                            <td>
+
+                                <a href="{% url 'update_dieta' dieta.id %}">
+                                    {{ dieta.nome }}
+                                </a>
+
+                            </td>
+                            <td class="text-center">
+                                <a id="botao" href="#" class="btn btn-success btn-circle btn-sm">
+                                    <i id="icone" class="fas fa-check"></i>
+                                </a>
+                            </td>
+                        </tr>
+
+                    {% endfor %}
+
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+
+
+    <script src="{% static "vendor/jquery/jquery.min.js" %}"></script>
+
+    <script src="{% static "vendor/datatables/jquery.dataTables.min.js" %}"></script>
+    <script src="{% static "vendor/datatables/dataTables.bootstrap4.min.js" %}"></script>
+
+    <!-- Page level custom scripts -->
+    <script src="{% static "js/demo/datatables-demo.js" %}"></script>
+  <script src="{% static 'vendor/jquery-easing/jquery.easing.min.js' %}"></script>
+
+{% endblock %}
