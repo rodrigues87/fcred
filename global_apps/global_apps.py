@@ -1,8 +1,5 @@
 from allauth.socialaccount.models import SocialAccount
 
-from fcred.models import Alimento
-
-
 def global_apps(request):
     context = {}
     if request.user.is_authenticated:
