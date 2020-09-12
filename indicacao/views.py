@@ -20,7 +20,7 @@ def list_minhas_indicacoes(request):
         except Prospector.DoesNotExist:
             messages.error(request, "O usuário logado não é um Prospector")
 
-    return redirect('usuarios/login')
+    return redirect('/usuarios/login')
 
 
 def list_indicacoes(request):
