@@ -8,14 +8,15 @@ import json
 from indicacao.forms import IndicacaoForm
 from indicacao.models import Indicacao
 from usuarios.models import Prospector
+from django.contrib import messages
 
 
 def list_minhas_indicacoes(request):
     if request.user.is_authenticated:
-
-        indicacoes = Indicacao.objects.filter(usuario=request.user)
-        return render(request, 'indicacoes/indicacoes_minha_lista.html', {'indicacoes': indicacoes})
-    return redirect('/indicacoes/solicitar')
+        prospector = Prospector.objects.get(usuario=request.user)
+        indicacoes = Indicacao.objects.filter(prospector=prospector)
+        return render(request, 'indicacoes/indicacoes_lista.html', {'indicacoes': indicacoes})
+    return redirect('')
 
 
 def list_indicacoes(request):
@@ -38,14 +39,14 @@ def create_indicacao(request):
 
 
 def update_indicacao(request, id):
-
     indicacao = Indicacao.objects.get(id=id)
     alimentos_indicacao = indicacao.alimentos.all()
     form = IndicacaoForm(request.POST or None, instance=indicacao)
     if form.is_valid():
         form.save()
         return redirect('list_indicacoes')
-    return render(request, 'indicacoes/indicacao-form.html', {'form': form, 'indicacao': indicacao,'alimentos_indicacao': alimentos_indicacao})
+    return render(request, 'indicacoes/indicacao-form.html',
+                  {'form': form, 'indicacao': indicacao, 'alimentos_indicacao': alimentos_indicacao})
 
 
 def delete_indicacao(request, id):
@@ -62,7 +63,6 @@ def delete_indicacao(request, id):
 def add_alimento_indicacao(request, id_alimento, id_indicacao):
     indicacao = Indicacao.objects.get(id=id_indicacao)
 
-
     indicacao.save()
 
     indicacao_obj = serializers.serialize('json', [indicacao, ])
@@ -72,7 +72,6 @@ def add_alimento_indicacao(request, id_alimento, id_indicacao):
 
 def remove_alimento_indicacao(request, id_alimento, id_indicacao):
     indicacao = Indicacao.objects.get(id=id_indicacao)
-
 
     indicacao.save()
 
@@ -84,18 +83,21 @@ def remove_alimento_indicacao(request, id_alimento, id_indicacao):
 @csrf_protect
 def submit_indicacao(request):
     if request.POST:
-        sexo = request.POST.get('sexo')
-        idade = request.POST.get('idade')
-        peso = request.POST.get('peso')
-        altura = request.POST.get('altura')
+        nome_indicado = request.POST.get('nome_indicado')
+        telefone_indicado = request.POST.get('telefone_indicado')
+        autorizado = request.POST.get('autorizado')
+        if autorizado == 'on':
+            autorizacao = True
+        else:
+            messages.error(request, "Não é possivel fazer uma solicitação sem a autorização do usuario")
+            return redirect('/indicacoes/minhas_indicacoes/')
 
-        atividade = request.POST.get('atividade')
+        prospector = Prospector.objects.get(usuario=request.user)
 
-
-        nome = request.POST.get('nomeDieta')
-        observacao = request.POST.get('observacao')
-        user = request.user
-        indicacao = Indicacao.objects.create(nome=nome, observacao=observacao, usuario=user)
+        indicacao = Indicacao.objects.create(nome_indicado=nome_indicado,
+                                             prospector=prospector,
+                                             telefone_indicado=telefone_indicado,
+                                             autorizado=autorizacao)
         indicacao.save()
 
-    return redirect('/indicacoes/update/' + str(indicacao.id))
+    return redirect('/indicacoes/minhas_indicacoes/')
