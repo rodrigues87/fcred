@@ -13,8 +13,12 @@ from django.contrib import messages
 
 def list_minhas_indicacoes(request):
     if request.user.is_authenticated:
-        prospector = Prospector.objects.filter(usuario=request.user)
-        indicacoes = Indicacao.objects.filter(prospector=prospector)
+        try:
+            prospector = Prospector.objects.get(usuario=request.user)
+            indicacoes = Indicacao.objects.filter(prospector=prospector)
+        except Prospector.DoesNotExist:
+            messages.error(request, "O usuário logado não é um Prospector")
+
         return render(request, 'indicacoes/indicacoes_lista.html', {'indicacoes': indicacoes})
     return redirect('')
 
