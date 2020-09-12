@@ -1,7 +1,13 @@
+from cpf_field.models import CPFField
 from django.contrib.auth.models import AbstractUser, BaseUserManager
 from django.db import models
 from django.utils.translation import ugettext_lazy as _
 from datetime import date
+
+
+from dados_bancarios.models import Dados_bancarios
+from phonenumber_field.modelfields import PhoneNumberField
+
 
 class UserManager(BaseUserManager):
     """Define a model manager for User model with no username field."""
@@ -51,3 +57,17 @@ class User(AbstractUser):
 
     def __str__(self):
         return self.first_name
+
+
+class Prospector(models.Model):
+
+    usuario = models.ForeignKey(User, on_delete=models.CASCADE)
+    cpf = CPFField('cpf')
+    telefone_celular = PhoneNumberField()
+    dados_bancarios = models.ForeignKey(Dados_bancarios,on_delete=models.CASCADE)
+
+    def __str__(self):
+        return self.usuario.first_name
+
+    class Meta:
+        verbose_name_plural = "Prospectores"

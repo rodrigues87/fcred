@@ -42,6 +42,8 @@ INSTALLED_APPS = [
     'usuarios',
     'produto',
     'indicacao',
+    'dados_bancarios',
+    'cpf_field',
     # ALLAUTH
     'allauth',
     'allauth.account',
