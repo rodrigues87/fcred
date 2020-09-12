@@ -15,13 +15,12 @@ def list_minhas_indicacoes(request):
     if request.user.is_authenticated:
         try:
             prospector = Prospector.objects.get(usuario=request.user)
-
+            indicacoes = Indicacao.objects.filter(prospector=prospector)
+            return render(request, 'indicacoes/indicacoes_lista.html', {'indicacoes': indicacoes})
         except Prospector.DoesNotExist:
             messages.error(request, "O usuário logado não é um Prospector")
-            return redirect('')
-        indicacoes = Indicacao.objects.filter(prospector=prospector)
-        return render(request, 'indicacoes/indicacoes_lista.html', {'indicacoes': indicacoes})
-    return redirect('')
+
+    return redirect('usuarios/login')
 
 
 def list_indicacoes(request):
