@@ -44,6 +44,7 @@ INSTALLED_APPS = [
     'indicacao',
     'dados_bancarios',
     'cpf_field',
+    'conta',
     # ALLAUTH
     'allauth',
     'allauth.account',
