@@ -24,6 +24,7 @@ urlpatterns = \
         path('usuarios/', include('usuarios.urls')),
         path('accounts/',include('allauth.urls')),
         path('usuarios/', include('usuarios.urls')),
+        path('indicacoes/', include('indicacao.urls')),
         path('', index),
 
     ] + static(settings.STATIC_URL, document_root=settings.STATIC_ROOT) \
