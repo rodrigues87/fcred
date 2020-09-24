@@ -59,6 +59,15 @@ ACCOUNT_AUTHENTICATION_METHOD = 'email'
 
 AUTH_USER_MODEL = 'usuarios.User'
 
+EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
+MAILER_EMAIL_BACKEND = EMAIL_BACKEND
+EMAIL_HOST = 'mail.fcred.com.br'
+EMAIL_HOST_PASSWORD = 'Fcred2020'
+EMAIL_HOST_USER = 'contato@fcred.com.br'
+EMAIL_PORT = 465
+EMAIL_USE_SSL = True
+DEFAULT_FROM_EMAIL = EMAIL_HOST_USER
+
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',

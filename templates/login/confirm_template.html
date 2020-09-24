@@ -1,0 +1,19 @@
+<!DOCTYPEhtml>
+<html lang="en">
+<head>
+    <meta charset ="UTF-8">
+    <title>Confirmação</title>
+    <style>
+        body {
+            color: blue;
+        }
+    </style>
+</head>
+<body>
+{% if success %}
+    Você confirmou sua conta!
+{% else %}
+    Erro,token inválido!
+{% endif %}
+</body>
+</html>

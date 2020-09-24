@@ -10,6 +10,7 @@ from usuarios.models import User
 
 # Create your views here.
 from django.views.decorators.csrf import csrf_protect
+from django.contrib.auth import get_user_model
 
 
 def base(request):
@@ -17,7 +18,7 @@ def base(request):
 
 
 def login_user(request):
-    return render(request, 'login.html')
+    return render(request, 'login/login.html')
 
 
 @csrf_protect
@@ -53,7 +54,7 @@ def submit_login_google(request):
             user = authenticate(username=user.email, password=password)
             if user is not None:
                 login(request, user)
-                print("usuario logado...redirecionado para pagina inicial: "+password)
+                print("usuario logado...redirecionado para pagina inicial: " + password)
 
         except User.DoesNotExist:
 
@@ -91,13 +92,23 @@ def list_usuarios(request):
     return render(request, 'usuarios_lista.html', {'usuario': usuario})
 
 
+@csrf_protect
 def create_usuario(request):
-    form = UserForm(request.POST or None)
+    if request.POST:
+        # TODO preciso verificar aqui se o usuario já existe
+        username = request.POST.get('username')
 
-    if form.is_valid():
-        form.save()
-        return redirect('list_usuarios')
-    return render(request, 'site/usuarios/usuario-form.html', {'form': form})
+        # TODO preciso codificar o password para adicioar ao django
+        password = request.POST.get('password')
+
+        myuser = User(username, password)
+
+        myuser.criar_usuario()
+        myuser.enviar_email()
+
+        messages.error(request, "Verifique a caixa de entrada do email")
+        return redirect('/usuarios/login/')
+    return render(request, 'login/register.html')
 
 
 def update_usuario(request, id):

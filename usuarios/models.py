@@ -7,6 +7,7 @@ from datetime import date
 
 from dados_bancarios.models import Dados_bancarios
 from phonenumber_field.modelfields import PhoneNumberField
+from django.contrib.auth import get_user_model
 
 
 class UserManager(BaseUserManager):
@@ -57,6 +58,10 @@ class User(AbstractUser):
 
     def __str__(self):
         return self.first_name
+
+    def criar_usuario(self):
+        user = get_user_model().objects.create(email=self.email, password=self.password)
+
 
 
 class Prospector(models.Model):
