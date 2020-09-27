@@ -5,8 +5,10 @@ from django.http import JsonResponse
 from django.shortcuts import render, redirect
 from django.contrib.auth import logout as django_logout
 
+from conta.models import Conta
+from dados_bancarios.models import Dados_bancarios
 from usuarios.forms import UserForm
-from usuarios.models import User
+from usuarios.models import User, Prospector
 
 # Create your views here.
 from django.views.decorators.csrf import csrf_protect
@@ -26,20 +28,26 @@ def submit_login(request):
     if request.POST:
         username = request.POST.get('username')
         password = request.POST.get('password')
-        print(username)
-        print(password)
-        user = authenticate(username=username, password=password)
-        if user is not None:
-            login(request, user)
-            return redirect('/')
-        else:
-            messages.error(request, "Usuário e senha inválido. Favor tentar novamente.")
-            return redirect('/usuarios/login')
+
+        user = User(email=username, password=password)
+        result = user.logar(request)
+        return result
+
+
+@csrf_protect
+def login_verificar(request):
+    if request.POST:
+        code = request.POST.get('code')
+        conta = Conta.objects.get(usuario=request.user)
+        conta.codigo_verificador_tentado = code
+        resultado = conta.verificar_conta(request)
+        return resultado
+
+    return render(request, 'login/verificar_conta.html')
 
 
 @csrf_protect
 def submit_login_google(request):
-    print("teste funcao")
     if request.POST and request.is_ajax():
         first_name = request.POST.get('first_name')
         imagem_url = request.POST.get('imagem_url')
@@ -93,21 +101,57 @@ def list_usuarios(request):
 
 
 @csrf_protect
+def register_prospector(request):
+    if request.POST:
+        cpf = request.POST.get('cpf')
+        celular = request.POST.get('celular')
+
+        numero_banco = request.POST.get('numero_banco')
+        nome_banco = request.POST.get('nome_banco')
+        agencia = request.POST.get('agencia')
+        conta = request.POST.get('conta')
+        digito_conta = request.POST.get('digito_conta')
+
+        dados_bancarios = Dados_bancarios(numero_banco=numero_banco,
+                                          nome_banco=nome_banco,
+                                          agencia=agencia,
+                                          conta=conta,
+                                          digito_conta=digito_conta
+                                          )
+        dados_bancarios.save()
+
+        prospector = Prospector(cpf=cpf, telefone_celular=celular, usuario=request.user,
+                                dados_bancarios=dados_bancarios)
+
+        prospector.save()
+
+        return redirect('/')
+
+    return render(request, 'prospectores/register_prospector.html')
+
+
+@csrf_protect
 def create_usuario(request):
     if request.POST:
         # TODO preciso verificar aqui se o usuario já existe
         username = request.POST.get('username')
-
-        # TODO preciso codificar o password para adicioar ao django
         password = request.POST.get('password')
 
-        myuser = User(username, password)
+        new_user = User(email=username)
+        new_user.set_password(password)
 
-        myuser.criar_usuario()
-        myuser.enviar_email()
+        login_user = User(email=username, password=password)
 
-        messages.error(request, "Verifique a caixa de entrada do email")
-        return redirect('/usuarios/login/')
+        user = new_user.criar_usuario(request)
+        if user is None:
+            return render(request, 'login/register.html')
+        conta = Conta(usuario=user)
+        conta.criar_conta()
+
+        messages.success(request, "Verifique a caixa de entrada do email")
+
+        login_user.logar(request)
+        return redirect('/usuarios/login/verificar')
     return render(request, 'login/register.html')
 
 

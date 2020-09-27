@@ -18,7 +18,8 @@ def list_minhas_indicacoes(request):
             indicacoes = Indicacao.objects.filter(prospector=prospector)
             return render(request, 'indicacoes/indicacoes_lista.html', {'indicacoes': indicacoes})
         except Prospector.DoesNotExist:
-            messages.error(request, "O usuário logado não é um Prospector")
+
+            return redirect('/usuarios/register_prospector')
 
     return redirect('/usuarios/login')
 

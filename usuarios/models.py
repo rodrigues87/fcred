@@ -4,10 +4,13 @@ from django.db import models
 from django.utils.translation import ugettext_lazy as _
 from datetime import date
 
-
 from dados_bancarios.models import Dados_bancarios
 from phonenumber_field.modelfields import PhoneNumberField
 from django.contrib.auth import get_user_model
+from django.core.mail import send_mail
+from django.contrib.auth import authenticate, login
+from django.contrib import messages
+from django.shortcuts import render, redirect
 
 
 class UserManager(BaseUserManager):
@@ -50,6 +53,7 @@ class User(AbstractUser):
     username = None
     email = models.EmailField(_('email address'), unique=True)
     imagem_url = models.CharField(max_length=600, blank=True, null=True)
+    validado = models.BooleanField(default=False)
 
     USERNAME_FIELD = 'email'
     REQUIRED_FIELDS = []
@@ -59,17 +63,44 @@ class User(AbstractUser):
     def __str__(self):
         return self.first_name
 
-    def criar_usuario(self):
-        user = get_user_model().objects.create(email=self.email, password=self.password)
+    def logar(self, request):
+        try:
+            user = authenticate(username=self.email, password=self.password)
+            if user is not None:
+                login(request, user)
 
+                if user.validado:
+                    return redirect('/')
+                else:
+                    return redirect('/usuarios/login/verificar')
+            else:
+                messages.error(request, "Usuário e senha inválido. Favor tentar novamente.")
+                return redirect('/usuarios/login')
+
+        except User.DoesNotExist:
+            messages.error(request, "Usuário não existe")
+            return redirect('/usuarios/login')
+
+    def criar_usuario(self, request):
+        try:
+            user = User.objects.get(email=self.email)
+            messages.error(request, "Usuário já existe")
+            return None
+
+        except User.DoesNotExist:
+            self.save()
+            return self
+
+    def enviar_email(self, conta):
+        send_mail('E-mail de Cofirmação', 'Seu código de confirmação: ' + conta.codigo_verificador,
+                  'contato@fcred.com.br', ['pedroh.mix@gmail.com'], fail_silently=False, )
 
 
 class Prospector(models.Model):
-
     usuario = models.ForeignKey(User, on_delete=models.CASCADE)
     cpf = CPFField('cpf')
     telefone_celular = PhoneNumberField()
-    dados_bancarios = models.ForeignKey(Dados_bancarios,on_delete=models.CASCADE)
+    dados_bancarios = models.ForeignKey(Dados_bancarios, on_delete=models.CASCADE)
 
     def __str__(self):
         return self.usuario.first_name
