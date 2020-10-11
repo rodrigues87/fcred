@@ -93,7 +93,7 @@ class User(AbstractUser):
 
     def enviar_email(self, conta):
         send_mail('E-mail de Cofirmação', 'Seu código de confirmação: ' + conta.codigo_verificador,
-                  'contato@fcred.com.br', ['pedroh.mix@gmail.com'], fail_silently=False, )
+                  'contato@fcred.com.br', [self.email], fail_silently=False, )
 
 
 class Prospector(models.Model):

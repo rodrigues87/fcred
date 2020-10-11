@@ -57,7 +57,7 @@ ACCOUNT_EMAIL_REQUIRED = True
 ACCOUNT_USERNAME_REQUIRED = False
 ACCOUNT_AUTHENTICATION_METHOD = 'email'
 
-AUTH_USER_MODEL = 'usuarios.User'
+AUTH_USER_MODEL = 'usuaricontato@fcred.com.bros.User'
 
 EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
 MAILER_EMAIL_BACKEND = EMAIL_BACKEND
