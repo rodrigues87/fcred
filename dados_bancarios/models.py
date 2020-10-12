@@ -18,6 +18,7 @@ class Dados_bancarios(models.Model):
         ('CR', 'Corrente'),
         ('PO', 'Poupança'),
         ('PG', 'Pagamento'),
+        ('PX', 'PIX')
 
     ]
 
