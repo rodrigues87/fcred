@@ -12,6 +12,8 @@ from django.contrib.auth import authenticate, login
 from django.contrib import messages
 from django.shortcuts import render, redirect
 
+from termos.models import Termos, Aceite
+
 
 class UserManager(BaseUserManager):
     """Define a model manager for User model with no username field."""
@@ -101,9 +103,10 @@ class Prospector(models.Model):
     cpf = CPFField('cpf')
     telefone_celular = PhoneNumberField()
     dados_bancarios = models.ForeignKey(Dados_bancarios, on_delete=models.CASCADE)
+    aceite = models.ForeignKey(Aceite, null=True, blank=True, on_delete=models.CASCADE)
 
     def __str__(self):
-        return self.usuario.first_name
+        return self.usuario.email
 
     class Meta:
         verbose_name_plural = "Prospectores"

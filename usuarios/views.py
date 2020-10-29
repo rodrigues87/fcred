@@ -7,6 +7,7 @@ from django.contrib.auth import logout as django_logout
 
 from conta.models import Conta
 from dados_bancarios.models import Dados_bancarios
+from termos.models import Termos, Aceite
 from usuarios.forms import UserForm
 from usuarios.models import User, Prospector
 
@@ -102,32 +103,47 @@ def list_usuarios(request):
 
 @csrf_protect
 def register_prospector(request):
+    global termo_vigente
+    termos = Termos.objects.all()
+    for termo in termos:
+        termo_vigente = termo
+
     if request.POST:
-        cpf = request.POST.get('cpf')
-        celular = request.POST.get('celular')
 
-        numero_banco = request.POST.get('numero_banco')
-        nome_banco = request.POST.get('nome_banco')
-        agencia = request.POST.get('agencia')
-        conta = request.POST.get('conta')
-        digito_conta = request.POST.get('digito_conta')
+        aceite = request.POST.get('aceite')
 
-        dados_bancarios = Dados_bancarios(numero_banco=numero_banco,
-                                          nome_banco=nome_banco,
-                                          agencia=agencia,
-                                          conta=conta,
-                                          digito_conta=digito_conta
-                                          )
-        dados_bancarios.save()
+        if aceite == 'on':
+            cpf = request.POST.get('cpf')
+            celular = request.POST.get('celular')
 
-        prospector = Prospector(cpf=cpf, telefone_celular=celular, usuario=request.user,
-                                dados_bancarios=dados_bancarios)
+            numero_banco = request.POST.get('numero_banco')
+            nome_banco = request.POST.get('nome_banco')
+            agencia = request.POST.get('agencia')
+            conta = request.POST.get('conta')
+            digito_conta = request.POST.get('digito_conta')
 
-        prospector.save()
+            aceite = Aceite(termo=termo_vigente, aceite=True)
+            aceite.save()
 
-        return redirect('/')
+            dados_bancarios = Dados_bancarios(numero_banco=numero_banco,
+                                              nome_banco=nome_banco,
+                                              agencia=agencia,
+                                              conta=conta,
+                                              digito_conta=digito_conta
+                                              )
+            dados_bancarios.save()
 
-    return render(request, 'prospectores/register_prospector.html')
+            prospector = Prospector(cpf=cpf, telefone_celular=celular, usuario=request.user,
+                                    dados_bancarios=dados_bancarios,aceite=aceite)
+
+            prospector.save()
+
+            return redirect('/')
+        else:
+            messages.error(request, "É preciso aceitar os termos")
+            return render(request, 'prospectores/register_prospector.html', {'termos': termos})
+
+    return render(request, 'prospectores/register_prospector.html', {'termos': termos})
 
 
 @csrf_protect
